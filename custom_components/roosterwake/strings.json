@@ -1,0 +1,94 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Rooster Wake",
+        "description": "Create an API key on the Rooster Wake dashboard (Account, then API keys) with the Wake and Read permissions. API keys are available on the Plus and Pro plans. Self-hosters: point the instance URL at your own deployment.",
+        "data": {
+          "base_url": "Instance URL",
+          "api_key": "API key"
+        }
+      },
+      "machine": {
+        "title": "Add a machine",
+        "description": "Name one of the machines saved on your Rooster Wake account and give its MAC address. The address must match a saved machine — the service refuses wakes for addresses that are not on its list.",
+        "data": {
+          "name": "Machine name",
+          "mac": "MAC address",
+          "add_another": "Add another machine"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect to Rooster Wake",
+        "description": "The stored API key was refused — it may have been revoked or expired. Paste a fresh key from the Rooster Wake dashboard.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "That API key was refused. Keys are created on the Rooster Wake dashboard and are available on the Plus and Pro plans — the free plan has none.",
+      "missing_scope": "The key works but lacks the Read permission. Create a key with both Wake and Read permissions.",
+      "cannot_connect": "Could not reach the Rooster Wake service at that address.",
+      "invalid_url": "The instance URL must start with http:// or https://.",
+      "invalid_mac": "That is not an address a machine can be woken at. Six pairs of hex digits, like 00:00:5E:00:53:01 — and it must name one adapter, not a broadcast or multicast group.",
+      "duplicate_mac": "That machine is already configured.",
+      "invalid_name": "Give the machine a name."
+    },
+    "abort": {
+      "already_configured": "This API key is already configured.",
+      "reauth_successful": "The API key was updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Rooster Wake options",
+        "menu_options": {
+          "add_machine": "Add a machine",
+          "remove_machine": "Remove machines",
+          "settings": "Settings"
+        }
+      },
+      "add_machine": {
+        "title": "Add a machine",
+        "data": {
+          "name": "Machine name",
+          "mac": "MAC address"
+        }
+      },
+      "remove_machine": {
+        "title": "Remove machines",
+        "data": {
+          "macs": "Machines to remove"
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "data": {
+          "confirm_wakes": "Ask the service to confirm wakes (probe whether the machine actually came up)"
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "That is not an address a machine can be woken at. Six pairs of hex digits, like 00:00:5E:00:53:01 — and it must name one adapter, not a broadcast or multicast group.",
+      "duplicate_mac": "That machine is already configured.",
+      "invalid_name": "Give the machine a name."
+    }
+  },
+  "entity": {
+    "button": {
+      "wake": {
+        "name": "Wake"
+      }
+    },
+    "binary_sensor": {
+      "presence": {
+        "name": "Last known state"
+      },
+      "emitter_online": {
+        "name": "Emitter online"
+      }
+    }
+  }
+}
