@@ -23,3 +23,8 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # The brands check requires this integration to be listed in the
+          # home-assistant/brands repository, which is an external PR with its own review
+          # queue. Ignored until that PR merges so a pending third-party review does not
+          # read as a red build; REMOVE this line the day the brands entry lands.
+          ignore: brands
