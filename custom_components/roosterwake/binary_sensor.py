@@ -1,16 +1,15 @@
-"""Presence, told honestly.
+"""Presence, told honestly — now straight from the service's own verdict.
 
 Two kinds of sensor:
 
-  - Per machine: LAST-KNOWN presence derived from the account's wake and power history —
-    a confirmed wake proves "up" at that moment, an accepted sleep or shutdown proves
-    "down" at that moment, and anything else is ``unknown``. The API does not report live
-    machine state, so neither does this sensor; its attributes say when and how the last
-    fact was established.
+  - Per machine: the machines list's ``presence`` object. ``live: true`` is
+    agent-connected truth — for an agent-carried machine, the agent's open connection IS
+    the machine being up. ``live: false`` with a state is LAST-KNOWN, timestamped: the
+    newest thing the wake log proves (a probe-confirmed wake, or an accepted sleep or
+    shutdown). ``unknown`` claims nothing, and the sensor says ``unknown`` too.
 
   - Per account: whether any emitter (dongle or agent) is connected to the relay right
-    now. This one IS live — it is the relay's own presence record — and it is the honest
-    proxy for "will pressing Wake do anything at all".
+    now — the honest proxy for "will pressing Wake do anything at all".
 """
 
 from __future__ import annotations
@@ -22,13 +21,14 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import RoosterWakeConfigEntry
-from .const import CONF_MACHINE_MAC, CONF_MACHINE_NAME, CONF_MACHINES
-from .coordinator import MachinePresence, RoosterWakeCoordinator
+from .api import Machine, MachinePresenceInfo
+from .const import CONF_MACHINES
+from .coordinator import RoosterWakeCoordinator
 from .entity import RoosterWakeMachineEntity, account_device_info
 
 
@@ -37,23 +37,32 @@ async def async_setup_entry(
     entry: RoosterWakeConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """A presence sensor per machine, one emitter sensor for the account."""
+    """A presence sensor per selected machine, one emitter sensor for the account."""
     coordinator = entry.runtime_data.coordinator
-    entities: list[BinarySensorEntity] = [
-        RoosterWakeMachinePresenceSensor(
-            coordinator,
-            entry,
-            machine[CONF_MACHINE_NAME],
-            machine[CONF_MACHINE_MAC],
-        )
-        for machine in entry.options.get(CONF_MACHINES, [])
-    ]
-    entities.append(RoosterWakeEmitterOnlineSensor(coordinator, entry))
-    async_add_entities(entities)
+    created: set[str] = set()
+
+    @callback
+    def _sync_entities() -> None:
+        data = coordinator.data
+        if data is None:
+            return
+        new: list[BinarySensorEntity] = []
+        for mac in entry.options.get(CONF_MACHINES, []):
+            machine = data.machines.get(mac)
+            if machine is None or mac in created:
+                continue
+            created.add(mac)
+            new.append(RoosterWakeMachinePresenceSensor(coordinator, entry, machine))
+        if new:
+            async_add_entities(new)
+
+    async_add_entities([RoosterWakeEmitterOnlineSensor(coordinator, entry)])
+    _sync_entities()
+    entry.async_on_unload(coordinator.async_add_listener(_sync_entities))
 
 
 class RoosterWakeMachinePresenceSensor(RoosterWakeMachineEntity, BinarySensorEntity):
-    """Last-known machine state. ``unknown`` whenever the history proves nothing."""
+    """The service's presence verdict: live where an agent answers, last-known otherwise."""
 
     _attr_translation_key = "presence"
 
@@ -61,39 +70,55 @@ class RoosterWakeMachinePresenceSensor(RoosterWakeMachineEntity, BinarySensorEnt
         self,
         coordinator: RoosterWakeCoordinator,
         entry: RoosterWakeConfigEntry,
-        name: str,
-        mac: str,
+        machine: Machine,
     ) -> None:
-        super().__init__(coordinator, entry.entry_id, name, mac)
-        self._attr_unique_id = f"{entry.entry_id}:{mac}:presence"
+        super().__init__(coordinator, entry.entry_id, machine.name, machine.mac)
+        self._attr_unique_id = f"{entry.entry_id}:{machine.mac}:presence"
 
     @property
-    def _presence(self) -> MachinePresence | None:
+    def _machine(self) -> Machine | None:
         if self.coordinator.data is None:
             return None
-        return self.coordinator.data.presence.get(self.mac)
+        return self.coordinator.data.machines.get(self.mac)
+
+    @property
+    def _presence(self) -> MachinePresenceInfo | None:
+        machine = self._machine
+        return machine.presence if machine else None
 
     @property
     def is_on(self) -> bool | None:
         presence = self._presence
         if presence is None or presence.state == "unknown":
-            # Honest: the history proves nothing either way right now.
+            # Honest: nothing is proved either way right now.
             return None
         return presence.state == "up"
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         presence = self._presence
-        attributes: dict[str, Any] = {
-            "kind": "last_known",
-            "mac": self.mac,
-        }
-        if presence and presence.since:
-            attributes["since"] = datetime.fromtimestamp(
-                presence.since, tz=timezone.utc
+        machine = self._machine
+        attributes: dict[str, Any] = {"mac": self.mac}
+        if presence is None:
+            return attributes
+        attributes["live"] = presence.live
+        attributes["kind"] = (
+            "live"
+            if presence.live
+            else "last_known"
+            if presence.state != "unknown"
+            else "unknown"
+        )
+        if presence.at is not None:
+            attributes["at"] = datetime.fromtimestamp(
+                presence.at, tz=timezone.utc
             ).isoformat()
-        if presence and presence.derived_from:
-            attributes["derived_from"] = presence.derived_from
+        if machine is not None:
+            if machine.site is not None:
+                attributes["site"] = machine.site
+            if machine.sighting is not None:
+                # G4.5's dated segment fact: what a user-triggered scan proved, when.
+                attributes["last_sighting"] = machine.sighting
         return attributes
 
 

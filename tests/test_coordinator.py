@@ -1,4 +1,4 @@
-"""Coordinator parsing against captured shapes, honest presence, and 429 backoff."""
+"""Coordinator against captured shapes: live-aware presence, 429 backoff, reauth."""
 
 from __future__ import annotations
 
@@ -12,52 +12,12 @@ from pytest_homeassistant_custom_component.common import (
 )
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.roosterwake.api import HistoryEntry
-from custom_components.roosterwake.coordinator import derive_presence
-
 from .conftest import setup_integration
-from .fixtures import (
-    BASE_URL,
-    HISTORY_OK,
-    MAC_LOFT,
-    MAC_OFFICE,
-    MAC_STUDY,
-)
+from .fixtures import BASE_URL
 
-
-def _rows() -> list[HistoryEntry]:
-    return [HistoryEntry.from_json(row) for row in HISTORY_OK["entries"]]
-
-
-def test_confirmed_wake_proves_up() -> None:
-    presence = derive_presence(_rows(), MAC_OFFICE)
-    assert presence.state == "up"
-    assert presence.derived_from == "wake_confirmed"
-    assert presence.since == 1754700300
-
-
-def test_accepted_sleep_proves_down() -> None:
-    presence = derive_presence(_rows(), MAC_STUDY)
-    assert presence.state == "down"
-    assert presence.derived_from == "sleep"
-
-
-def test_unconfirmed_wake_proves_nothing() -> None:
-    """A sent packet is not a machine that came up. Honest unknown."""
-    presence = derive_presence(_rows(), MAC_LOFT)
-    assert presence.state == "unknown"
-    assert presence.since is None
-
-
-def test_newest_proof_wins() -> None:
-    """Office PC has an older shutdown row (id 180) and a newer confirmed wake (id 203)."""
-    presence = derive_presence(_rows(), MAC_OFFICE)
-    assert presence.state == "up"
-
-
-def test_case_insensitive_mac_match() -> None:
-    presence = derive_presence(_rows(), MAC_OFFICE.lower())
-    assert presence.state == "up"
+OFFICE_PRESENCE = "binary_sensor.office_pc_presence"
+STUDY_PRESENCE = "binary_sensor.study_pc_presence"
+LOFT_PRESENCE = "binary_sensor.loft_pc_presence"
 
 
 async def test_entities_reflect_the_poll(
@@ -65,22 +25,31 @@ async def test_entities_reflect_the_poll(
     aioclient_mock: AiohttpClientMocker,
     config_entry: MockConfigEntry,
 ) -> None:
-    """The whole pipe: mocked API to entity states."""
+    """The whole pipe: mocked API to entity states, presence straight from the service."""
     await setup_integration(hass, aioclient_mock, config_entry)
 
-    office = hass.states.get("binary_sensor.office_pc_last_known_state")
+    office = hass.states.get(OFFICE_PRESENCE)
     assert office is not None
     assert office.state == "on"
-    assert office.attributes["kind"] == "last_known"
-    assert office.attributes["derived_from"] == "wake_confirmed"
+    # live: the agent's open connection IS the machine being up.
+    assert office.attributes["live"] is True
+    assert office.attributes["kind"] == "live"
+    assert "at" not in office.attributes
+    assert office.attributes["site"] == "Home"
+    # G4.5's dated segment fact rides along.
+    assert office.attributes["last_sighting"]["segment"] == "192.168.1.x"
 
-    study = hass.states.get("binary_sensor.study_pc_last_known_state")
+    study = hass.states.get(STUDY_PRESENCE)
     assert study is not None
     assert study.state == "off"
+    assert study.attributes["live"] is False
+    assert study.attributes["kind"] == "last_known"
+    assert study.attributes["at"] == "2025-08-09T00:46:40+00:00"
 
-    loft = hass.states.get("binary_sensor.loft_pc_last_known_state")
+    loft = hass.states.get(LOFT_PRESENCE)
     assert loft is not None
     assert loft.state == "unknown"
+    assert loft.attributes["kind"] == "unknown"
 
     emitter = hass.states.get("binary_sensor.rooster_wake_emitter_online")
     assert emitter is not None
@@ -108,6 +77,7 @@ async def test_429_backs_off_without_touching_the_network(
     async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=61))
     await hass.async_block_till_done()
     assert coordinator.last_update_success is False
+    assert coordinator.holding_off is True
     calls_after_429 = len(aioclient_mock.mock_calls)
     assert calls_after_429 == 1
 
@@ -118,7 +88,7 @@ async def test_429_backs_off_without_touching_the_network(
     assert coordinator.last_update_success is False
 
     # The machine sensors go unavailable rather than lying with stale certainty.
-    office = hass.states.get("binary_sensor.office_pc_last_known_state")
+    office = hass.states.get(OFFICE_PRESENCE)
     assert office is not None
     assert office.state == "unavailable"
 

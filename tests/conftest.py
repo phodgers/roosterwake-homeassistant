@@ -18,18 +18,16 @@ from custom_components.roosterwake.const import (
 )
 
 from .fixtures import (
-    AGENT_DEVICE_ID,
     API_KEY,
     BASE_URL,
-    DEVICE_ID,
     DEVICES_OK,
-    HISTORY_EMPTY,
-    HISTORY_OK,
+    ERROR_NO_MACHINE,
+    ERROR_OUT_OF_SCOPE_POWER,
     MAC_LOFT,
     MAC_OFFICE,
     MAC_STUDY,
+    MACHINES_OK,
 )
-
 
 if sys.platform == "win32":
     # The harness disables socket CREATION per test (pytest-socket), exempting only Unix
@@ -52,39 +50,46 @@ def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
 
 @pytest.fixture
 def config_entry() -> MockConfigEntry:
-    """A configured account with three machines."""
+    """A configured account with all three machines selected."""
     return MockConfigEntry(
         domain=DOMAIN,
         title="Rooster Wake",
         unique_id=hashlib.sha256(API_KEY.encode()).hexdigest()[:16],
         data={CONF_BASE_URL: BASE_URL, "api_key": API_KEY},
         options={
-            CONF_MACHINES: [
-                {"name": "Office PC", "mac": MAC_OFFICE},
-                {"name": "Study PC", "mac": MAC_STUDY},
-                {"name": "Loft PC", "mac": MAC_LOFT},
-            ],
+            CONF_MACHINES: [MAC_OFFICE, MAC_STUDY, MAC_LOFT],
             CONF_CONFIRM_WAKES: True,
         },
     )
 
 
-def mock_account_reads(aioclient_mock: AiohttpClientMocker) -> None:
-    """Mock the two readable endpoints the coordinator polls."""
+def mock_account_reads(
+    aioclient_mock: AiohttpClientMocker, *, power_scope: bool = True
+) -> None:
+    """Mock the reads a setup performs: the two polled lists and the scope probe.
+
+    The scope probe is POST /api/v1/power with an empty body: 400 ``no_machine`` proves
+    the scope gate was passed (nothing performed, nothing logged), 403 proves it was not.
+    """
     aioclient_mock.get(f"{BASE_URL}/api/v1/devices", json=DEVICES_OK)
-    aioclient_mock.get(f"{BASE_URL}/api/v1/devices/{DEVICE_ID}/history", json=HISTORY_OK)
-    aioclient_mock.get(
-        f"{BASE_URL}/api/v1/devices/{AGENT_DEVICE_ID}/history", json=HISTORY_EMPTY
-    )
+    aioclient_mock.get(f"{BASE_URL}/api/v1/machines", json=MACHINES_OK)
+    if power_scope:
+        aioclient_mock.post(f"{BASE_URL}/api/v1/power", json=ERROR_NO_MACHINE, status=400)
+    else:
+        aioclient_mock.post(
+            f"{BASE_URL}/api/v1/power", json=ERROR_OUT_OF_SCOPE_POWER, status=403
+        )
 
 
 async def setup_integration(
     hass: HomeAssistant,
     aioclient_mock: AiohttpClientMocker,
     config_entry: MockConfigEntry,
+    *,
+    power_scope: bool = True,
 ) -> MockConfigEntry:
     """Set the entry up against mocked reads."""
-    mock_account_reads(aioclient_mock)
+    mock_account_reads(aioclient_mock, power_scope=power_scope)
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
