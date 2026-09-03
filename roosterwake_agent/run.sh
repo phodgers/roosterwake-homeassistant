@@ -16,23 +16,38 @@ set -e
 readonly CONFIG=/data/agent.json
 export ROOSTERWAKE_CONFIG="${CONFIG}"
 
-if bashio::config.true 'emitter_only'; then
-  export RW_EMITTER_ONLY=1
-else
+# The options are read from /data/options.json — the file the supervisor writes for every
+# add-on before it starts — rather than through bashio::config, which fetches the same values
+# over the Supervisor API. The file is the older contract and the one that also holds outside
+# a supervisor (the add-on's own build check runs this image under plain Docker with an
+# options.json mounted, which is how it was proven), and a wake sender should not need a
+# working API round trip before it can read three fields it already has on disk.
+readonly OPTIONS=/data/options.json
+if [ ! -f "${OPTIONS}" ]; then
+  bashio::exit.nok "No options file at ${OPTIONS} — this image is meant to run as a Home Assistant add-on, where the supervisor writes it. For plain Docker use ghcr.io/phodgers/roosterwake-agent directly (RW_EMAIL or RW_TOKEN in the environment)."
+fi
+
+option() {
+  jq -r --arg key "${1}" '.[$key] // empty' "${OPTIONS}"
+}
+
+if [ "$(jq -r '.emitter_only // true' "${OPTIONS}")" = "false" ]; then
   export RW_EMITTER_ONLY=0
+else
+  export RW_EMITTER_ONLY=1
 fi
 
 has_email=false
 has_token=false
-if bashio::config.has_value 'email'; then
+email="$(option email)"
+token="$(option token)"
+if [ -n "${email}" ]; then
   has_email=true
-  RW_EMAIL="$(bashio::config 'email')"
-  export RW_EMAIL
+  export RW_EMAIL="${email}"
 fi
-if bashio::config.has_value 'token'; then
+if [ -n "${token}" ]; then
   has_token=true
-  RW_TOKEN="$(bashio::config 'token')"
-  export RW_TOKEN
+  export RW_TOKEN="${token}"
 fi
 
 # Both is a contradiction whatever state the volume is in; neither is a problem only until an
