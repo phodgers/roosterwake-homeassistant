@@ -37,6 +37,31 @@ This integration is a thin client over Rooster Wake's public REST API. It gives 
 - At least one emitter claimed on your account: a Rooster Wake dongle, or the free agent
   running on an always-on machine.
 
+## Add-on: the always-on waker
+
+This repository ships **two things**, and they do different jobs:
+
+| | What it is | What it needs |
+|---|---|---|
+| **The integration** (`custom_components/roosterwake/`, below) | Your machines on a Home Assistant dashboard: wake buttons, power buttons, presence sensors, wake-result events — over the REST API. | An API key, which is a **Plus or Pro** feature. |
+| **The add-on** (`roosterwake_agent/`) | The free Rooster Wake **agent** running on your Home Assistant box as your account's **always-on waker** — the thing that actually puts the magic packet on your network. Emitter-only by default, on the host's network. | Your account address or an enrolment token. **Free on every plan.** |
+
+Neither needs the other. The integration sends wakes through whatever emitters your account
+has; the add-on *is* an emitter — the one most Home Assistant households were missing, because
+the box that never sleeps is the natural waker and nothing else in the house stays on.
+
+To install the add-on:
+
+1. **Settings → Add-ons → Add-on store → ⋮** (top right) **→ Repositories**.
+2. Add `https://github.com/phodgers/roosterwake-homeassistant`, then close the dialog.
+3. Install **Rooster Wake agent**, put your account email (or a dashboard enrolment token) in
+   its **Configuration** tab, and **Start** it. Within a minute it is on your dashboard's
+   Emitters page as an **Always on** waker.
+
+The add-on's own [documentation](roosterwake_agent/DOCS.md) has the options, the networking
+note and the identity story. It is built on your device from
+`ghcr.io/phodgers/roosterwake-agent` — the same static binary the agent ships everywhere.
+
 ## Installation
 
 Until this repository is listed in the HACS default store:

@@ -1,0 +1,33 @@
+# The Rooster Wake agent as a Home Assistant add-on: the free agent, emitter-only, as the
+# account's always-on waker on the box that is already always on.
+#
+# host_network is the whole of the networking story. A wake is a broadcast, a broadcast cannot
+# leave a bridge, and the agent refuses to start on one — the supervisor puts this add-on on the
+# host's network, so the refusal never fires here. There is no port to map: the agent listens on
+# nothing but a loopback beacon, and dials out to the relay over TLS.
+#
+# The version tracks the agent image the Dockerfile pins (ghcr.io/phodgers/roosterwake-agent),
+# because that is what a person is actually running; .github/workflows/validate.yml holds the
+# two equal.
+name: Rooster Wake agent
+version: "0.16.0"
+slug: roosterwake_agent
+description: The free Rooster Wake agent as your always-on waker — it sends the wake to the machines on this network
+url: https://github.com/phodgers/roosterwake-homeassistant
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: services
+boot: auto
+host_network: true
+init: false
+# Optional keys stay OUT of `options`: the supervisor validates a present value against its
+# schema, and an empty string is not an email — so a default of "" would make the untouched
+# configuration invalid. Absent is what "not set" looks like, and the UI still shows the field.
+options:
+  emitter_only: true
+schema:
+  email: email?
+  token: password?
+  emitter_only: bool

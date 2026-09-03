@@ -1,0 +1,10 @@
+# The Home Assistant base image per architecture, handed to the Dockerfile as BUILD_FROM. The
+# supervisor builds this add-on ON THE DEVICE (there is no `image:` in config.yaml), so the
+# multi-arch agent image the Dockerfile copies the binary from resolves to the device's own
+# architecture without any per-arch logic here.
+#
+# Pinned to an Alpine release rather than :latest so a base-image change is a deliberate edit.
+build_from:
+  aarch64: ghcr.io/home-assistant/aarch64-base:3.21
+  amd64: ghcr.io/home-assistant/amd64-base:3.21
+  armv7: ghcr.io/home-assistant/armv7-base:3.21

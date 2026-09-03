@@ -15,6 +15,65 @@ jobs:
       - uses: actions/checkout@v4
       - uses: home-assistant/actions/hassfest@master
 
+  addon:
+    # The add-on (roosterwake_agent/) is outside what hassfest and HACS look at — both inspect
+    # custom_components/ alone — so its manifests get their own check: the YAML parses, the
+    # keys the supervisor requires are present, the arch list and build.yaml agree, the version
+    # pinned in the Dockerfile is the add-on's version, and run.sh is syntactically bash. Not
+    # a build: the supervisor builds add-ons on the device, and the image the Dockerfile copies
+    # from is published by the agent repo's own workflow.
+    name: Add-on manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Check the add-on manifests
+        run: |
+          pip install --quiet pyyaml
+          python - <<'EOF'
+          import re, sys, yaml
+
+          def load(path):
+              with open(path, encoding="utf-8") as f:
+                  return yaml.safe_load(f)
+
+          repo = load("repository.yaml")
+          assert repo["name"] and repo["url"] and repo["maintainer"], "repository.yaml is incomplete"
+
+          cfg = load("roosterwake_agent/config.yaml")
+          for key in ("name", "version", "slug", "description", "url", "arch", "startup", "boot", "options", "schema"):
+              assert key in cfg, f"config.yaml lacks {key}"
+          assert cfg["slug"] == "roosterwake_agent", "the slug must match the directory"
+          assert cfg["host_network"] is True, "a waker must be on the host's network — a broadcast cannot leave a bridge"
+          assert cfg["init"] is False, "the base image's s6 is the init"
+          assert set(cfg["arch"]) == {"aarch64", "amd64", "armv7"}, cfg["arch"]
+          assert cfg["schema"] == {"email": "email?", "token": "password?", "emitter_only": "bool"}, cfg["schema"]
+          assert cfg["options"] == {"emitter_only": True}, "optional keys stay out of options (an empty string is not an email)"
+          assert re.fullmatch(r"\d+\.\d+\.\d+", str(cfg["version"])), cfg["version"]
+
+          build = load("roosterwake_agent/build.yaml")
+          assert set(build["build_from"]) == set(cfg["arch"]), "build.yaml and config.yaml disagree on the architectures"
+          for arch, image in build["build_from"].items():
+              assert image.startswith(f"ghcr.io/home-assistant/{arch}-base:"), image
+
+          with open("roosterwake_agent/Dockerfile", encoding="utf-8") as f:
+              dockerfile = f.read()
+          pinned = re.search(r"^FROM ghcr\.io/phodgers/roosterwake-agent:(\S+) AS agent$", dockerfile, re.M)
+          assert pinned, "the Dockerfile must copy the binary from a pinned agent image"
+          assert pinned.group(1) == str(cfg["version"]), f"Dockerfile pins {pinned.group(1)}, config.yaml says {cfg['version']}"
+          assert 'CMD ["/run.sh"]' in dockerfile
+
+          for path in ("roosterwake_agent/DOCS.md", "roosterwake_agent/README.md", "roosterwake_agent/CHANGELOG.md",
+                       "roosterwake_agent/icon.png", "roosterwake_agent/logo.png"):
+              open(path, "rb").close()
+          print("add-on manifests: ok")
+          EOF
+          bash -n roosterwake_agent/run.sh
+          head -1 roosterwake_agent/run.sh | grep -q '^#!/usr/bin/with-contenv bashio$'
+          ! grep -q $'\r' roosterwake_agent/run.sh
+
   hacs:
     name: HACS validation
     runs-on: ubuntu-latest
