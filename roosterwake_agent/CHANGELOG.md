@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.17.1
+
+- Follows agent 0.17.1 (a Mac says goodbye before it sleeps, through a helper the macOS
+  installer package carries, and the agent's loopback beacon names the operating system it
+  runs on. The add-on's own emitter-only run in its container carries no helper, never
+  sleeps and serves no beacon).
+
 ## 0.17.0
 
 - Follows agent 0.17.0 (macOS and Linux agents gain keep-awake, the sleep judge, the farewell
