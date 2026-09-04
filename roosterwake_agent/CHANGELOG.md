@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.5
+
+- Follows agent 0.16.5 (an agent handed a shutdown or restart no longer reconnects in the
+  seconds before the process ends, so its farewell stands; the add-on's own emitter-only run
+  is unaffected).
+
 ## 0.16.4
 
 - Follows agent 0.16.4 (a Windows agent puts its machine back to sleep, or shuts it down
