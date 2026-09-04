@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.4
+
+- Follows agent 0.16.4 (a Windows agent puts its machine back to sleep, or shuts it down
+  cleanly, when a keep-awake hold runs out and nobody is using it; the add-on's own
+  emitter-only run holds nothing and is unaffected).
+
 ## 0.16.3
 
 - Follows agent 0.16.3 (Windows agents watch their remote session and report changes at
