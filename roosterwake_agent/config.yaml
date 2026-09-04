@@ -10,7 +10,7 @@
 # because that is what a person is actually running; .github/workflows/validate.yml holds the
 # two equal.
 name: Rooster Wake agent
-version: "0.16.1"
+version: "0.16.2"
 slug: roosterwake_agent
 description: The free Rooster Wake agent as your always-on waker — it sends the wake to the machines on this network
 url: https://github.com/phodgers/roosterwake-homeassistant

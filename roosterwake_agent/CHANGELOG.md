@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.2
+
+- Follows agent 0.16.2 (the connect report names the kind of remote session keeping a
+  Windows machine awake; nothing changes for the add-on's own emitter-only run).
+
 ## 0.16.1
 
 - Follows agent 0.16.1: the machine's wake-from-off verdict now rides the connect report (a
