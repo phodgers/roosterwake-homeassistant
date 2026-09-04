@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.7
+
+- Follows agent 0.16.7 (a Windows agent whose first read after a boot finds no network
+  adapters re-reads a minute later instead of trusting the empty answer for a quarter of an
+  hour; the add-on's own emitter-only run reports no adapters and is unaffected).
+
 ## 0.16.6
 
 - Follows agent 0.16.6 (a Windows agent that starts within minutes of the machine booting
