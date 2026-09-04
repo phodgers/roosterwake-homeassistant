@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.3
+
+- Follows agent 0.16.3 (Windows agents watch their remote session and report changes at
+  once; the add-on's own emitter-only run is unaffected).
+
 ## 0.16.2
 
 - Follows agent 0.16.2 (the connect report names the kind of remote session keeping a
