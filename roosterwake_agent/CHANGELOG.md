@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.17.0
+
+- Follows agent 0.17.0 (macOS and Linux agents gain keep-awake, the sleep judge, the farewell
+  before a Linux suspend and the wake-adapter inventory; a Claude Code remote-control session
+  counts as the machine being in use on every platform. The add-on's own emitter-only run in
+  its container advertises none of that: it holds no lock, judges nothing and sends no
+  farewell, exactly as before).
+
 ## 0.16.7
 
 - Follows agent 0.16.7 (a Windows agent whose first read after a boot finds no network
