@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.6
+
+- Follows agent 0.16.6 (a Windows agent that starts within minutes of the machine booting
+  puts ten minutes on the keep-awake meter, so a machine switched on by its plug is judged
+  like one woken by a packet; the add-on's own emitter-only run stakes nothing).
+
 ## 0.16.5
 
 - Follows agent 0.16.5 (an agent handed a shutdown or restart no longer reconnects in the
