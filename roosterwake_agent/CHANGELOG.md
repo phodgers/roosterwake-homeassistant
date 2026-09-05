@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.19.0
+
+- Follows agent 0.19.0 (an agent sees SSH: a shell over SSH counts as the machine being in
+  use and is held open while somebody is working in it, a file transfer over SSH — sftp, scp,
+  rsync, sshfs — is held while the bytes move, and both stop counting ten minutes after the
+  last activity, so a session left open overnight no longer keeps a machine awake. A machine
+  now goes back to sleep ten minutes after the last activity rather than only when a
+  keep-awake hold runs out. The add-on's own emitter-only run in its container watches no
+  sessions and sleeps nothing).
+
 ## 0.18.0
 
 - Follows agent 0.18.0 (Linux and macOS agents read whether the machine's network adapter is
