@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.0
+
+- Follows agent 0.18.0 (Linux and macOS agents read whether the machine's network adapter is
+  set to wake on a magic packet and, from the dashboard's "Prepare for wake", set it — and on
+  Linux keep it set through every start and wake; the Linux unit runs on systemd releases
+  before 240. The add-on's own emitter-only run in its container reports no wake facts and
+  changes nothing on the host).
+
 ## 0.17.1
 
 - Follows agent 0.17.1 (a Mac says goodbye before it sleeps, through a helper the macOS
