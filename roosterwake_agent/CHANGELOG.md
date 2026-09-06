@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.0
+
+- Follows agent 0.21.0 (a file transfer over SSH now names the program moving the bytes —
+  sftp, scp, rsync or git — so the dashboard and the connector say "rsync over SSH" rather than
+  "file transfer over SSH" while it runs).
+
 ## 0.20.0
 
 - Follows agent 0.20.0 (a machine now offers its network addresses most-wakeable-first — an
