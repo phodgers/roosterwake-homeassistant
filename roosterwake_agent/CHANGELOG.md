@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.20.0
+
+- Follows agent 0.20.0 (a machine now offers its network addresses most-wakeable-first — an
+  interface with a link before one without, a burned-in address before a made-up one, a wire
+  before a radio — so a machine joins at an address a wake can actually reach instead of at a
+  laptop's bridge or a desktop's virtual switch, and where a machine has more than eight
+  addresses it is the least wakeable that are dropped. A Windows machine the operating system
+  is shutting down now says so, and the dashboard says the machine is shut down rather than
+  that its agent stopped. An agent also reports what kind of machine it is — laptop or
+  desktop, whether it has a battery, which sleep state it uses, and whether its wireless
+  adapter is armed to be woken — each reported only where the machine actually answers, so the
+  service can offer a wake where one will work and name the obstacle where it will not. The
+  add-on's own emitter-only run in its container reports none of these facts about the Home
+  Assistant host and shuts nothing down; its addresses follow the same order).
+
 ## 0.19.0
 
 - Follows agent 0.19.0 (an agent sees SSH: a shell over SSH counts as the machine being in
