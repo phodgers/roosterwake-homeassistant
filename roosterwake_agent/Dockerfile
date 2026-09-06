@@ -8,7 +8,7 @@
 #
 # The version pinned below is the add-on's version in config.yaml; validate.yml holds them equal.
 ARG BUILD_FROM
-FROM ghcr.io/phodgers/roosterwake-agent:0.22.0 AS agent
+FROM ghcr.io/phodgers/roosterwake-agent:0.23.0 AS agent
 
 FROM ${BUILD_FROM}
 

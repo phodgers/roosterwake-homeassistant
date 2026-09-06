@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.23.0
+
+- Follows agent 0.23.0 (from the dashboard the agent can now set SSH up on a machine — server,
+  firewall rule, your public key, passwords off — and turn it on and off afterwards; a
+  connection serving two SSH channels at once is read the same way on every poll). Nothing
+  changes for this add-on's container beyond the image tag.
+
 ## 0.22.0
 
 - Follows agent 0.22.0 (on Windows the agent is now a service rather than a scheduled task, so
