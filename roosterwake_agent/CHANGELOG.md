@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.22.0
+
+- Follows agent 0.22.0 (on Windows the agent is now a service rather than a scheduled task, so
+  a machine that is shut down says so instead of "agent stopped"; a git push or fetch over SSH
+  on Windows is read as a transfer named git). Nothing changes for this add-on's Linux
+  container beyond the image tag.
+
 ## 0.21.0
 
 - Follows agent 0.21.0 (a file transfer over SSH now names the program moving the bytes —
