@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.27.0
+
+- Follows agent 0.27.0. Nothing changes for this add-on: it is a container, and an agent only
+  replaces itself where a service manager started it, so this one is still updated by taking a
+  new image. The release fixes self-update for agents installed as a service on Linux and
+  macOS, which could seldom act on a machine that sleeps.
+
 ## 0.26.0
 
 - Follows agent 0.26.0, and skips 0.25.0: an add-on updated from 0.24.0 gets both releases at
