@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.24.0
+
+- Follows agent 0.24.0 (setting SSH up from the dashboard now works on a Linux machine the
+  installer manages: the service stays sandboxed and asks the init system for a transient unit
+  to do the privileged work in, and each step reads the machine back instead of trusting a
+  command exit code). An upgrade restarts the service so it picks up the new unit.
+
 ## 0.23.0
 
 - Follows agent 0.23.0 (from the dashboard the agent can now set SSH up on a machine — server,
