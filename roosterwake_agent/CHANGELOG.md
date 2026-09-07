@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.26.0
+
+- Follows agent 0.26.0. A machine that wakes now gets its own chance to update a minute or
+  three later, so one that sleeps between short spells of use no longer misses every check;
+  at most one such check an hour however often it wakes. A download interrupted by sleep
+  leaves nothing behind for the next attempt to trip over.
+
 ## 0.24.0
 
 - Follows agent 0.24.0 (setting SSH up from the dashboard now works on a Linux machine the
