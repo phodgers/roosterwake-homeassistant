@@ -2,10 +2,16 @@
 
 ## 0.26.0
 
-- Follows agent 0.26.0. A machine that wakes now gets its own chance to update a minute or
-  three later, so one that sleeps between short spells of use no longer misses every check;
-  at most one such check an hour however often it wakes. A download interrupted by sleep
-  leaves nothing behind for the next attempt to trip over.
+- Follows agent 0.26.0, and skips 0.25.0: an add-on updated from 0.24.0 gets both releases at
+  once. Setting SSH up from the dashboard works on a Linux machine the installer manages, a
+  file transfer over SSH names the program moving the bytes, and a Windows machine being shut
+  down says so rather than looking as though its agent stopped.
+- Agents installed as a service on Linux or macOS now keep themselves up to date, checking
+  shortly after they start, every few hours, and a minute or three after the machine wakes, so
+  one that sleeps between short spells of use no longer misses every check. **This add-on is
+  not one of them and does not change**: an agent only replaces itself where the service
+  manager started it, which a container image has no part in, so it is updated the way it
+  always was -- by taking a new image.
 
 ## 0.24.0
 
