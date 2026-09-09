@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.30.0
+
+- Follows agent 0.30.0. Removing a key from the dashboard now takes it off both machines: the
+  machine it signed in to stops accepting it, and the machine it was made on forgets its private
+  half and the connection shortcut that named it. Only a key the dashboard made is forgotten this
+  way; a key you supplied yourself is left where you put it, and a machine that is asleep forgets
+  its key the next time it connects. Nothing changes for this add-on: it is a container, and an
+  agent only replaces itself where a service manager started it, so this one is still updated by
+  taking a new image.
+
 ## 0.29.1
 
 - Follows agent 0.29.1. On a Linux machine where the agent runs as a service, the SSH set-up
