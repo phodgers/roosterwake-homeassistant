@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.29.0
+
+- Follows agent 0.29.0. The SSH set-up now checks with the login service itself whether password
+  sign-in really went off, and says so; the dashboard shows whether a machine still takes
+  passwords and offers to put password sign-in back exactly as it was found, behind your
+  authenticator code. Nothing changes for this add-on: it is a container, and an agent only
+  replaces itself where a service manager started it, so this one is still updated by taking a
+  new image.
+
 ## 0.28.0
 
 - Follows agent 0.28.0. The dashboard now sets an SSH connection up between two machines itself:
