@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.28.0
+
+- Follows agent 0.28.0. The dashboard now sets an SSH connection up between two machines itself:
+  it mints a key on the machine you connect from, installs it on the machine you connect to, and
+  removing it from the dashboard leaves that machine refusing it. Every file the agent writes
+  inside a home directory goes through a confinement that refuses a link of either kind and
+  writes through one open handle. Nothing changes for this add-on: it is a container, and an
+  agent only replaces itself where a service manager started it, so this one is still updated by
+  taking a new image.
+
 ## 0.27.0
 
 - Follows agent 0.27.0. Nothing changes for this add-on: it is a container, and an agent only
