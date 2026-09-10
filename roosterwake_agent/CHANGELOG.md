@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.31.0
+
+- Follows agent 0.31.0. The dashboard learns which computer your browser is on from the agent
+  itself, and the SSH cards use that memory rather than asking your browser for permission to
+  look at the local network; a machine whose login service is installed but stopped is offered
+  Set up SSH straight away, and the agent starts it. Nothing changes for this add-on: a
+  container never opens a browser, and an agent only replaces itself where a service manager
+  started it, so this one is still updated by taking a new image.
+
 ## 0.30.0
 
 - Follows agent 0.30.0. Removing a key from the dashboard now takes it off both machines: the
