@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.32.0
+
+- Follows agent 0.32.0. Remote Desktop from the dashboard now opens once the machine is ready to be
+  reached: the agent reports whether the Chrome Remote Desktop host is running and signed in, and
+  the dashboard waits for that before handing over; the dashboard can also say what woke a machine.
+  What reaches this add-on is the record the agent keeps of which machine it is — a fresh enrolment
+  is no longer written over by the copy already running, and two programs saving the record at once
+  cannot lose each other's write. This add-on is still updated by taking a new image: an agent only
+  replaces itself where a service manager started it.
+
 ## 0.31.0
 
 - Follows agent 0.31.0. The dashboard learns which computer your browser is on from the agent
