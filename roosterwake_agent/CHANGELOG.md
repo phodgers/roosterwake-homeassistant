@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.33.0
+
+- Follows agent 0.33.0. The SSH card's Connect can now open an SSH client for you on the computer
+  your browser is on — PuTTY, WinSCP or the system client — with the machine woken, held awake and
+  the connection ready to go. Nothing changes for this add-on: opening a window needs the desktop
+  session of somebody sitting at the machine, which a container never has, so this agent offers no
+  client to open. It is still updated by taking a new image.
+
 ## 0.32.0
 
 - Follows agent 0.32.0. Remote Desktop from the dashboard now opens once the machine is ready to be
