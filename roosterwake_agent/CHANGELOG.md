@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.34.0
+
+- Follows agent 0.34.0. A machine woken after a long sleep is now heard whatever else happened at
+  the moment of waking, so it keeps the time on the meter a wake is meant to give it rather than
+  being put back to sleep seconds later, its wake settings are re-applied and the dashboard learns
+  what woke it; Remote Desktop waits for the Chrome Remote Desktop host to sign in after a sleep as
+  well as after a boot. Nothing in this release reaches this add-on: a container neither sleeps nor
+  resumes. It takes the new image, as it always has.
+
 ## 0.33.0
 
 - Follows agent 0.33.0. The SSH card's Connect can now open an SSH client for you on the computer
