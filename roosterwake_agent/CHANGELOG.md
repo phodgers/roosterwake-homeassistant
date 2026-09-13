@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.35.0
+
+- Follows agent 0.35.0. A client opened from the SSH card now signs in with the key the dashboard
+  made for that computer: the terminal and file-transfer choices open by the saved connection name,
+  so the key and port come with it, and PuTTY and WinSCP are handed the same key in the format they
+  read; a terminal client that ends with an error leaves its window open with the message. Nothing
+  in this release reaches this add-on: a container has no desktop, no keys and no client to open.
+  It takes the new image, as it always has.
+
 ## 0.34.1
 
 - Follows agent 0.34.1. A machine woken from a long sleep now gets its whole ten minutes before the
