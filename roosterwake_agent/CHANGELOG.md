@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.34.1
+
+- Follows agent 0.34.1. A machine woken from a long sleep now gets its whole ten minutes before the
+  idle rule can act, whatever order the operating system delivers its wake notification in: the
+  agent notices the wake from its own clock, so the time a machine spent asleep is never counted as
+  time it sat idle, and a machine woken remotely cannot be put back to sleep in the seconds after
+  it comes up. Nothing in this release reaches this add-on: a container neither sleeps nor wakes.
+  It takes the new image, as it always has.
+
 ## 0.34.0
 
 - Follows agent 0.34.0. A machine woken after a long sleep is now heard whatever else happened at
