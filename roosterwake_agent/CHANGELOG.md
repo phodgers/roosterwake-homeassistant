@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.35.1
+
+- Follows agent 0.35.1. A terminal client opened from the SSH card that ends with an error now keeps
+  its window open with the message in it whatever console it was given, and a client the agent
+  cannot keep on the screen is not opened at all: the card says so and offers the command to paste.
+  Nothing in this release reaches this add-on: a container has no desktop and no client to open. It
+  takes the new image, as it always has.
+
 ## 0.35.0
 
 - Follows agent 0.35.0. A client opened from the SSH card now signs in with the key the dashboard
