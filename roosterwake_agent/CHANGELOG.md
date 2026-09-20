@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.36.0
+
+- Follows agent 0.36.0. The SSH card can open VS Code on the machine you are connecting to, with the
+  editor on your own computer and the files, the terminal and the extensions on the machine; opening
+  a client no longer flashes a console window on Windows; and each machine says whether each
+  remote-desktop host on it is ready to take a connection, not merely running, so the Remote Desktop
+  press waits for the host it is handing over to. Nothing in this release reaches this add-on: a
+  container has no desktop, no remote-desktop host and no client to open. It takes the new image, as
+  it always has.
+
 ## 0.35.1
 
 - Follows agent 0.35.1. A terminal client opened from the SSH card that ends with an error now keeps
