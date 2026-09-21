@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.36.1
+
+- Follows agent 0.36.1. A Linux machine you open in VS Code over SSH now shows as "in use — VS Code
+  over SSH" on its dashboard row and in Claude's answers, and stays awake while VS Code is working:
+  current releases of VS Code run their server under process names the agent did not recognise, so
+  the connection was reported as a file transfer instead. Nothing in this release reaches this
+  add-on: a container runs no SSH server and nobody opens VS Code on it. It takes the new image, as
+  it always has.
+
 ## 0.36.0
 
 - Follows agent 0.36.0. The SSH card can open VS Code on the machine you are connecting to, with the
