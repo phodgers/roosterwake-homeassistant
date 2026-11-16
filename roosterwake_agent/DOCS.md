@@ -82,7 +82,7 @@ wake is visible rather than a mystery.
 This repository ships both, and they do different jobs:
 
 - **This add-on** is the **waker**: the free agent, sending the packet. Free on every plan.
-- **The integration** (installed through HACS as a custom repository, then *Settings → Devices &
+- **The integration** (installed from HACS by searching for Rooster Wake, then *Settings → Devices &
   services*) puts your machines on a Home Assistant dashboard as wake buttons, power buttons and
   presence sensors over the REST API. It signs in with an **API key**, which is a **Plus or Pro**
   feature.

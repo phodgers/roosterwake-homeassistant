@@ -64,12 +64,11 @@ note and the identity story. It is built on your device from
 
 ## Installation
 
-Until this repository is listed in the HACS default store:
+Rooster Wake is in the HACS default store:
 
-1. In HACS, open **Custom repositories** (three-dot menu).
-2. Add `https://github.com/phodgers/roosterwake-homeassistant` with type **Integration**.
-3. Install **Rooster Wake**, then restart Home Assistant.
-4. Go to **Settings → Devices & services → Add integration** and search for
+1. In HACS, search for *Rooster Wake* and download it.
+2. Restart Home Assistant.
+3. Go to **Settings → Devices & services → Add integration** and search for
    *Rooster Wake*.
 
 Manual alternative: copy `custom_components/roosterwake/` into your Home Assistant
